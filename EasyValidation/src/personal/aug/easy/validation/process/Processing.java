@@ -2,10 +2,16 @@ package personal.aug.easy.validation.process;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import personal.aug.easy.validation.annotations.ValidateByteArray;
+import personal.aug.easy.validation.annotations.ValidateDate;
 import personal.aug.easy.validation.annotations.ValidateNotNull;
+import personal.aug.easy.validation.annotations.ValidateNumber;
 import personal.aug.easy.validation.annotations.ValidateString;
 import personal.aug.easy.validation.supporttypes.Status;
 
@@ -79,15 +85,94 @@ public class Processing {
 		return result;
 	}
 	
-	private ProcessResult handleValidateString(ValidateString ann, String value) {
+	private ProcessResult handleValidateByteArray(ValidateByteArray ann, byte[] value) {
 		ProcessResult result = new ProcessResult();
 		
-		if (ann.isNotNullOrEmpty()) {
-			if (value == null || value.isEmpty()) {
-				result.getStatusList().add(Status.IS_NULL_OR_EMPTY);
+		if (value == null || value.length == 0) {
+			result.getStatusList().add(Status.IS_NULL_OR_EMPTY);
+		} else {
+			result.getStatusList().add(Status.IS_VALID);
+		}
+		
+		return result;
+	}
+	
+	private ProcessResult handleValidateNumber(ValidateNumber ann, Double value) {
+		ProcessResult result = new ProcessResult();
+		
+		if (value == null) {
+			result.getStatusList().add(Status.IS_NULL_OR_EMPTY);
+		} else {
+			result.getStatusList().add(Status.IS_VALID);
+		}
+		
+		if (ann.min() > 0d) {
+			if (value != null && value < ann.min()) {
+				result.getStatusList().add(Status.INVALID_LENGTH);
 			} else {
 				result.getStatusList().add(Status.IS_VALID);
 			}
+		}
+		
+		if (ann.max() > 0d) {
+			if (value != null && value > ann.max()) {
+				result.getStatusList().add(Status.INVALID_LENGTH);
+			} else {
+				result.getStatusList().add(Status.IS_VALID);
+			}
+		}
+		
+		return result;
+	}
+	
+	private ProcessResult handleValidateDate(ValidateDate ann, String value) {
+		ProcessResult result = new ProcessResult();
+		
+		if (value == null) {
+			result.getStatusList().add(Status.IS_NULL_OR_EMPTY);
+		} else {
+			result.getStatusList().add(Status.IS_VALID);
+		}
+		
+		if (!isNullOrEmpty(value) && !isNullOrEmpty(ann.pattern())) {
+			SimpleDateFormat sdf = null;
+			try {
+				sdf = new SimpleDateFormat(ann.pattern());
+				sdf.format(new Date());
+			} catch (IllegalArgumentException e) {
+				result.getStatusList().add(Status.INVALID_DATE_PATTERN);
+			}
+			
+			if (sdf != null) {
+				result.getStatusList().add(Status.IS_VALID);
+				Date date = null;
+				try {
+					date = sdf.parse(value);
+				} catch (ParseException e) {
+					result.getStatusList().add(Status.INVALID_DATE_VALUE);
+				}
+				
+				if (date != null) {
+					result.getStatusList().add(Status.IS_VALID);
+					if (!isNullOrEmpty(ann.min())) {
+						// TODO: check min, max date
+					}
+				}
+			}
+		} else {  // pattern is null
+			result.getStatusList().add(Status.DATE_PATTERN_IS_NULL);
+		}
+		
+		return result;
+	}
+	
+	private ProcessResult handleValidateString(ValidateString ann, String value) {
+		ProcessResult result = new ProcessResult();
+		
+		if (value == null || value.isEmpty()) {
+			result.getStatusList().add(Status.IS_NULL_OR_EMPTY);
+		} else {
+			result.getStatusList().add(Status.IS_VALID);
 		}
 		
 		if (ann.minLength() > 0) {
@@ -115,6 +200,10 @@ public class Processing {
 		}
 		
 		return result;
+	}
+	
+	private boolean isNullOrEmpty(String s) {
+		return s == null || s.isEmpty();
 	}
 
 }

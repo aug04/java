@@ -10,7 +10,6 @@ import java.lang.annotation.Target;
 @Target(FIELD)
 public @interface ValidateString {
 
-	public boolean isNotNullOrEmpty() default true;
 	public int minLength() default 0;
 	public int maxLength() default Integer.MAX_VALUE;
 	public String match() default "";
