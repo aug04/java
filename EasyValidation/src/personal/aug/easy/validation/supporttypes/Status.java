@@ -11,7 +11,9 @@ public enum Status {
 	DATE_PATTERN_IS_NULL("date_pattern_is_null"),
 	INVALID_DATE_VALUE("invalid_date_value"),
 	INVALID_MIN_DATE_VALUE("invalid_min_date_value"),
-	INVALID_MAX_DATE_VALUE("invalid_max_date_value");
+	INVALID_MAX_DATE_VALUE("invalid_max_date_value"),
+	DATE_OUT_OF_RANGE("date_out_of_range"),
+	NUMBER_OUT_OF_RANGE("number_out_of_range");
 	
 	private String code;
 	

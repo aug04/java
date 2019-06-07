@@ -45,6 +45,24 @@ public class Processing {
 							resultField.put(ValidateString.class.getSimpleName(), 
 									handleValidateString((ValidateString) ann, val));
 						}
+						
+						if (ann instanceof ValidateByteArray) {
+							byte[] val = !String.valueOf(value).equals("null") ? (byte[]) value : null;
+							resultField.put(ValidateByteArray.class.getSimpleName(), 
+									handleValidateByteArray((ValidateByteArray) ann, val));
+						}
+						
+						if (ann instanceof ValidateNumber) {
+							double val = !String.valueOf(value).equals("null") ? Double.valueOf(value.toString()) : null;
+							resultField.put(ValidateNumber.class.getSimpleName(), 
+									handleValidateNumber((ValidateNumber) ann, val));
+						}
+						
+						if (ann instanceof ValidateDate) {
+							String val = !String.valueOf(value).equals("null") ? value.toString() : null;
+							resultField.put(ValidateDate.class.getSimpleName(), 
+									handleValidateDate((ValidateDate) ann, val));
+						}
 					}
 					
 					result.put(field.getName(), resultField);
@@ -108,7 +126,7 @@ public class Processing {
 		
 		if (ann.min() > 0d) {
 			if (value != null && value < ann.min()) {
-				result.getStatusList().add(Status.INVALID_LENGTH);
+				result.getStatusList().add(Status.NUMBER_OUT_OF_RANGE);
 			} else {
 				result.getStatusList().add(Status.IS_VALID);
 			}
@@ -116,7 +134,7 @@ public class Processing {
 		
 		if (ann.max() > 0d) {
 			if (value != null && value > ann.max()) {
-				result.getStatusList().add(Status.INVALID_LENGTH);
+				result.getStatusList().add(Status.NUMBER_OUT_OF_RANGE);
 			} else {
 				result.getStatusList().add(Status.IS_VALID);
 			}
@@ -154,8 +172,54 @@ public class Processing {
 				
 				if (date != null) {
 					result.getStatusList().add(Status.IS_VALID);
-					if (!isNullOrEmpty(ann.min())) {
+					// if has only minimum date
+					if (!isNullOrEmpty(ann.min()) && isNullOrEmpty(ann.max())) {
 						// TODO: check min, max date
+						Date minDate = null;
+						try {
+							minDate = sdf.parse(ann.min());
+							if (date.before(minDate))
+								result.getStatusList().add(Status.DATE_OUT_OF_RANGE);
+							else
+								result.getStatusList().add(Status.IS_VALID);
+						} catch (ParseException e) {
+							result.getStatusList().add(Status.INVALID_MIN_DATE_VALUE);
+						}
+					} else if (isNullOrEmpty(ann.min()) && !isNullOrEmpty(ann.max())) {
+						// if has only maximum date
+						Date maxDate = null;
+						try {
+							maxDate = sdf.parse(ann.max());
+							if (date.after(maxDate))
+								result.getStatusList().add(Status.DATE_OUT_OF_RANGE);
+							else
+								result.getStatusList().add(Status.IS_VALID);
+						} catch (ParseException e) {
+							result.getStatusList().add(Status.INVALID_MAX_DATE_VALUE);
+						}
+					} else {
+						// has both minimum & maximum date
+						Date minDate = null;
+						try {
+							minDate = sdf.parse(ann.min());
+						} catch (ParseException e) {
+							result.getStatusList().add(Status.INVALID_MIN_DATE_VALUE);
+						}
+						
+						Date maxDate = null;
+						try {
+							maxDate = sdf.parse(ann.max());
+						} catch (ParseException e) {
+							result.getStatusList().add(Status.INVALID_MAX_DATE_VALUE);
+						}
+						
+						if (minDate != null && maxDate != null) {
+							if (minDate.after(maxDate) || minDate.equals(maxDate)) {
+								result.getStatusList().add(Status.INVALID_MIN_DATE_VALUE);
+							} else if (date.before(minDate) || date.after(maxDate)) {
+								result.getStatusList().add(Status.DATE_OUT_OF_RANGE);
+							}
+						}
 					}
 				}
 			}
