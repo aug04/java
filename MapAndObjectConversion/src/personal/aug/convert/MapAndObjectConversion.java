@@ -12,7 +12,7 @@ public abstract class MapAndObjectConversion {
 		this.processing = new Processing();
 	}
 	
-	Map<Object, Object> toMap() throws Exception {
+	public Map<Object, Object> toMap() throws Exception {
 		return processing.toMap(this.getClass(), this);
 	}
 	
