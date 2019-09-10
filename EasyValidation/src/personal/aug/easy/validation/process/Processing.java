@@ -35,7 +35,7 @@ public class Processing {
 					Map<String, Object> resultField = new HashMap<>();
 					for (Annotation ann : annotations) {
 						if (ann instanceof ValidateNotNull) {
-							String val = !String.valueOf(value).equals("null") ? value.toString() : "";
+							String val = !String.valueOf(value).equals("null") ? value.toString() : null;
 							resultField.put(ValidateNotNull.class.getSimpleName(), 
 									handleValidateNotNull((ValidateNotNull) ann, val));
 						}
