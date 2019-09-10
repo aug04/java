@@ -46,6 +46,7 @@ public class Processing {
 				for (Field field : fields) {
 					field.setAccessible(true);
 					String key = field.getName();
+					if (key.equals("serialVersionUID")) continue;
 					
 					Annotation[] annotations = field.getAnnotations();
 					for (Annotation ann : annotations) {
