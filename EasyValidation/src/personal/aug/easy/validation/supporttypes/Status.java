@@ -2,7 +2,7 @@ package personal.aug.easy.validation.supporttypes;
 
 public enum Status {
 
-	ALL_IS_VALID("all_is_valid"),
+	ALL_ARE_VALID("all_are_valid"),
 	IS_VALID("is_valid"),
 	IS_NULL_OR_EMPTY("is_null_or_empty"),
 	NOT_MATCH("not_match"),

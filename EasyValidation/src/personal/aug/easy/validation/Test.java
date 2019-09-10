@@ -1,5 +1,6 @@
 package personal.aug.easy.validation;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import personal.aug.easy.validation.annotations.ValidateByteArray;
@@ -8,6 +9,7 @@ import personal.aug.easy.validation.annotations.ValidateNotNull;
 import personal.aug.easy.validation.annotations.ValidateNumber;
 import personal.aug.easy.validation.annotations.ValidateString;
 import personal.aug.easy.validation.process.ProcessResult;
+import personal.aug.easy.validation.supporttypes.Status;
 
 public class Test extends EasyValidation {
 
@@ -90,7 +92,20 @@ public class Test extends EasyValidation {
 			}
 		}
 		
-		System.out.println("ALL IS VALID: " + result.get("allIsValid"));
+		System.out.println("ALL ARE VALID: " + result.get(Status.ALL_ARE_VALID.getCode()));
+		User user = new User();
+		user.setId("123456");
+		user.setAge(25);
+		user.setEmail("myangelshh@gmail.com");
+		System.out.println(user.toString());
+		Map<Object, Object> map = new HashMap<Object, Object>();
+		map.put("USER_ID", "abcxyz");
+		map.put("AGE", 30);
+		map.put("EMAIL", "abc@gmail.com");
+		user.fromMap(map);
+		System.out.println(user.toString());
+		
+		
 		/*SimpleDateFormat sdf = null;
 		try {
 			sdf = new SimpleDateFormat("dd/MM/yyyy");

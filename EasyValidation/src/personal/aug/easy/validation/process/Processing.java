@@ -68,24 +68,24 @@ public class Processing {
 					result.put(field.getName(), resultField);
 				}
 			}
-			boolean allIsValid = true;
+			boolean allAreValid = true;
 			for (Object obj : result.values()) {
 				if (obj instanceof Map<?, ?>) {
 					for (Object obj2 : ((Map<?, ?>) obj).values()) {
 						if (obj2 instanceof ProcessResult) {
 							if (!((ProcessResult) obj2).isValid()) {
-								allIsValid = false;
+								allAreValid = false;
 								break;
 							}
 						}
 					}
 					
-					if (!allIsValid)
+					if (!allAreValid)
 						break;
 				}
 			}
 			
-			result.put("allIsValid", allIsValid);
+			result.put(Status.ALL_ARE_VALID.getCode(), allAreValid);
 		}
 		
 		return result;
