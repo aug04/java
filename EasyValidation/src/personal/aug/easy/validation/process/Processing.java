@@ -53,7 +53,7 @@ public class Processing {
 						}
 						
 						if (ann instanceof ValidateNumber) {
-							double val = !String.valueOf(value).equals("null") ? Double.valueOf(value.toString()) : null;
+							Double val = !String.valueOf(value).equals("null") ? Double.valueOf(value.toString()) : null;
 							resultField.put(ValidateNumber.class.getSimpleName(), 
 									handleValidateNumber((ValidateNumber) ann, val));
 						}
